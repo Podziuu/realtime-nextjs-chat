@@ -7,14 +7,12 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { GridBackgroundDemo } from "@/components/ui/grid-background";
 
 const formSchema = z.object({
   username: z.string().min(2).max(50),
@@ -24,7 +22,6 @@ const formSchema = z.object({
 });
 
 const page = () => {
-  // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -35,13 +32,15 @@ const page = () => {
     },
   });
 
-  // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
     if (values.password !== values.cpassword) {
-      // toast a message to user
+      // TODO: toast a message to user
       alert("Passwords do not match");
+      return;
     }
+    // TODO: send data to server and redirect to main page
+
   }
   return (
     <Form {...form}>
@@ -53,11 +52,8 @@ const page = () => {
             <FormItem>
               <FormLabel>Username</FormLabel>
               <FormControl>
-                <Input placeholder="Tyler" type="text" {...field} />
+                <Input placeholder="username" type="text" {...field} />
               </FormControl>
-              <FormDescription>
-                This is your public display name.
-              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -71,9 +67,6 @@ const page = () => {
               <FormControl>
                 <Input placeholder="email@com.pl" type="text" {...field} />
               </FormControl>
-              <FormDescription>
-                This is your public display name.
-              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -85,11 +78,8 @@ const page = () => {
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input placeholder="Tyler" type="password" {...field} />
+                <Input placeholder="password" type="password" {...field} />
               </FormControl>
-              <FormDescription>
-                This is your public display name.
-              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -101,11 +91,8 @@ const page = () => {
             <FormItem>
               <FormLabel>Confirm Password</FormLabel>
               <FormControl>
-                <Input placeholder="Tyler" type="password" {...field} />
+                <Input placeholder="confirm your password" type="password" {...field} />
               </FormControl>
-              <FormDescription>
-                This is your public display name.
-              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
