@@ -3,7 +3,7 @@ import TailwindButton from "@/components/ui/tailwindcss-buttons";
 
 export default function Home() {
   return (
-    <main className="flex items-center justify-center min-h-screen flex-col bg-black">
+    <section className="flex items-center justify-center min-h-screen flex-col bg-black">
       <h1 className="text-5xl font-bold text-white">
         Welcome to realtime chat app!
       </h1>
@@ -12,6 +12,6 @@ export default function Home() {
         <TailwindButton text="Log in!" link="/login" />
       </div>
       <BackgroundBeams />
-    </main>
+    </section>
   );
 }
