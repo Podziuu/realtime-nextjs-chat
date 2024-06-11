@@ -34,11 +34,6 @@ const page = () => {
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
-    if (values.password !== values.cpassword) {
-      // TODO: toast a message to user
-      alert("Passwords do not match");
-      return;
-    }
     // TODO: send data to server and redirect to main page
 
   }
