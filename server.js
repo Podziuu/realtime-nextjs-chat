@@ -16,6 +16,8 @@ app.prepare().then(() => {
 
   io.on("connection", (socket) => {
     // ...
+    console.log("a user connected");
+    console.log(socket.id);
   });
 
   httpServer
