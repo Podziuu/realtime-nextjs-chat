@@ -18,6 +18,13 @@ app.prepare().then(() => {
     // ...
     console.log("a user connected");
     console.log(socket.id);
+    socket.on('disconnect', () => {
+      console.log('user disconnected');
+    })
+
+    socket.on('message', (msg) => {
+      console.log('message: ' + msg);
+    })
   });
 
   httpServer

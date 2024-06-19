@@ -15,6 +15,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
+import { socket } from "@/app/socket";
 // import { toast } from "@/components/ui/use-toast"
 
 const FormSchema = z.object({
@@ -28,6 +29,7 @@ export function MessageForm() {
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
     console.log(data);
+    socket.emit("message", data.message);
     // toast({
     //   title: "You submitted the following values:",
     //   description: (

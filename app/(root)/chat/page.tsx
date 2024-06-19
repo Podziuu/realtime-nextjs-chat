@@ -1,8 +1,11 @@
+"use client";
+
+import { socket } from "@/app/socket";
 import { MessageForm } from "@/components/messageForm";
 import { Button } from "@/components/ui/button";
 import { Tabs } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import React from "react";
+import { useEffect, useState } from "react";
 
 const tabs = [
   {
@@ -51,6 +54,16 @@ const tabs = [
 ];
 
 const page = () => {
+  const [isConnected, setIsConnected] = useState(false);
+
+  console.log(isConnected);
+
+  useEffect(() => {
+    socket.on("connect", () => {
+      setIsConnected(true);
+    });
+  }, []);
+
   return (
     <section className="flex h-screen">
       <div className="w-1/4 relative">
@@ -72,7 +85,8 @@ const page = () => {
             Hello i from poland
           </div>
           <div className="self-end bg-blue-600 w-fit max-w-80 p-1 rounded-lg">
-            gdsa gdsa gdsagdsagdsca gdsahguiklghdsa gdsjakhlgdsa gdsajkghdsakjg gdsaagdsa gdsagdsagdsagsdgdsagdsagsdgsda gdsagdsa
+            gdsa gdsa gdsagdsagdsca gdsahguiklghdsa gdsjakhlgdsa gdsajkghdsakjg
+            gdsaagdsa gdsagdsagdsagsdgdsagdsagsdgsda gdsagdsa
           </div>
         </div>
 
