@@ -33,7 +33,7 @@ const page = () => {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
     if (values.password !== values.cpassword) {
       // TODO: toast a message to user
@@ -41,11 +41,18 @@ const page = () => {
       return;
     }
     // TODO: send data to server and redirect to main page
+    const res = await fetch("/api/auth/signup", {
+      method: "POST",
+      body: JSON.stringify(values),
+    });
   }
   return (
     <>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-full">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-8 w-full"
+        >
           <FormField
             control={form.control}
             name="username"
@@ -105,7 +112,9 @@ const page = () => {
           <Button type="submit">Submit</Button>
         </form>
       </Form>
-      <Link href="/login" className="text-gray-600 hover:text-gray-400">Have an account already?</Link>
+      <Link href="/login" className="text-gray-600 hover:text-gray-400">
+        Have an account already?
+      </Link>
     </>
   );
 };
