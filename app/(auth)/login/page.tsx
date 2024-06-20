@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { socket } from "@/app/socket";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
 import { useState } from "react";
@@ -56,7 +55,6 @@ const page = () => {
         });
         return;
       }
-      socket.connect();
       router.push("/chat");
     } finally {
       setIsLoading(false);

@@ -1,10 +1,11 @@
 "use client";
 
-import { socket } from "@/app/socket";
+import { connectSocket } from "@/app/socket";
 import { MessageForm } from "@/components/messageForm";
 import { Button } from "@/components/ui/button";
 import { Tabs } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import { cookies } from "next/headers";
 import { useEffect, useState } from "react";
 
 const tabs = [
@@ -59,9 +60,7 @@ const page = () => {
   console.log(isConnected);
 
   useEffect(() => {
-    socket.on("connect", () => {
-      setIsConnected(true);
-    });
+    connectSocket("g");
   }, []);
 
   return (
