@@ -1,5 +1,9 @@
+"use server"
+
 import User from "@/database/user.model";
+import generateToken from "@/utils/generateToken";
 import { connectToDatabase } from "@/utils/mongoose";
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 export const POST = async (req: Request) => {
@@ -9,7 +13,13 @@ export const POST = async (req: Request) => {
   const user = await User.findOne({ email });
 
   if (user && (await user.comparePassword(password))) {
-    // TODO: Generate JWT token and send it back to the client
+    const token = generateToken(user._id);
+    cookies().set("token", token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict",
+        expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      });
     return NextResponse.json(
       { _id: user._id, username: user.username, email: user.email },
       { status: 200 }
