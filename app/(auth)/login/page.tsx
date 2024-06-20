@@ -32,11 +32,25 @@ const page = () => {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
     // TODO: send data to server and redirect to main page
+    const res = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(values),
+    });
+    console.log(res);
+    if(res.status !== 200) {
+      // TODO: toast error message to user
+      return;
+    }
+    const data = await res.json();
+    console.log(data);
     socket.connect();
-    router.push("/chat")
+    router.push("/chat");
   }
   return (
     <>
