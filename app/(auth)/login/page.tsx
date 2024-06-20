@@ -16,6 +16,8 @@ import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { socket } from "@/app/socket";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/use-toast";
+import { useState } from "react";
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -23,7 +25,9 @@ const formSchema = z.object({
 });
 
 const page = () => {
+  const { toast } = useToast();
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -33,31 +37,37 @@ const page = () => {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    // TODO: send data to server and redirect to main page
-    const res = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(values),
-    });
-    console.log(res);
-    if(res.status !== 200) {
-      // TODO: toast error message to user
-      return;
+    setIsLoading(true);
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
+      console.log(res);
+      const data = await res.json();
+      console.log(data);
+      if (res.status !== 200) {
+        toast({
+          description: data?.message,
+          variant: "destructive",
+        });
+        return;
+      }
+      socket.connect();
+      router.push("/chat");
+    } finally {
+      setIsLoading(false);
     }
-    const data = await res.json();
-    console.log(data);
-    socket.connect();
-    router.push("/chat");
   }
   return (
     <>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-8 w-full"
+          className="flex flex-col gap-6 w-full"
         >
           <FormField
             control={form.control}
@@ -85,10 +95,10 @@ const page = () => {
               </FormItem>
             )}
           />
-          <Button type="submit">Submit</Button>
+          <Button type="submit" className="w-fit self-center">{isLoading ? "Loading..." : "Submit"}</Button>
         </form>
       </Form>
-      <Link href="/signup" className="text-gray-600 hover:text-gray-400">
+      <Link href="/signup" className="text-gray-600 hover:text-gray-400 mt-4">
         Don't have an account already?
       </Link>
     </>

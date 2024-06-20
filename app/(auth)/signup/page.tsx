@@ -14,6 +14,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/use-toast";
+import { useState } from "react";
+import { socket } from "@/app/socket";
 
 const formSchema = z.object({
   username: z.string().min(2).max(50),
@@ -23,6 +27,9 @@ const formSchema = z.object({
 });
 
 const page = () => {
+  const { toast } = useToast();
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -34,27 +41,42 @@ const page = () => {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+    setIsLoading(true);
     if (values.password !== values.cpassword) {
-      // TODO: toast a message to user
-      alert("Passwords do not match");
+      toast({
+        description: "Password does not match",
+        variant: "destructive",
+      });
       return;
     }
-    // TODO: send data to server and redirect to main page
-    const res = await fetch("/api/auth/signup", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(values),
-    });
+    try {
+      const res = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
+      const data = await res.json();
+      if (res.status !== 200) {
+        toast({
+          description: data?.message,
+          variant: "destructive",
+        });
+        return;
+      }
+      socket.connect();
+      router.push("/chat");
+    } finally {
+      setIsLoading(false);
+    }
   }
   return (
     <>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-8 w-full"
+          className="flex flex-col gap-6 w-full"
         >
           <FormField
             control={form.control}
@@ -112,10 +134,12 @@ const page = () => {
               </FormItem>
             )}
           />
-          <Button type="submit">Submit</Button>
+          <Button type="submit" className="w-fit self-center">
+            {isLoading ? "Loading..." : "Submit"}
+          </Button>
         </form>
       </Form>
-      <Link href="/login" className="text-gray-600 hover:text-gray-400">
+      <Link href="/login" className="text-gray-600 hover:text-gray-400 mt-4">
         Have an account already?
       </Link>
     </>
