@@ -87,7 +87,7 @@ const page = () => {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input placeholder="password" type="password" {...field} />
+                  <Input placeholder="password" type="password" {...field} autoComplete="on" />
                 </FormControl>
                 <FormMessage />
               </FormItem>

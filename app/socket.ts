@@ -7,7 +7,7 @@ const socket = io({
   withCredentials: true,
 });
 
-export const connectSocket = (token: string) => {
+export const connectSocket = () => {
 //   socket.auth = { token };
   socket.connect();
 

@@ -1,73 +1,46 @@
 "use client";
 
-import { connectSocket } from "@/app/socket";
+import socket, { connectSocket } from "@/app/socket";
 import { MessageForm } from "@/components/messageForm";
-import { Button } from "@/components/ui/button";
-import { Tabs } from "@/components/ui/tabs";
-import { Textarea } from "@/components/ui/textarea";
-import { cookies } from "next/headers";
+import Sidebar from "@/components/sidebar";
 import { useEffect, useState } from "react";
 
-const tabs = [
-  {
-    title: "Your chats",
-    value: "your chats",
-    content: (
-      <div className="w-full overflow-hidden relative h-full p-10 text-white bg-gradient-to-br from-neutral-800 to-neutral-950">
-        <p className="mt-8 text-4xl font-bold">Your chats</p>
-        <div className="flex flex-col gap-6 mt-16">
-          <div>
-            <p>User 1</p>
-            <p>You: Hello</p>
-          </div>
-          <div>
-            <p>User 2</p>
-            <p>You: Hello</p>
-          </div>
-          <div>
-            <p>User 3</p>
-            <p>You: Hello</p>
-          </div>
-        </div>
-      </div>
-    ),
-  },
-  {
-    title: "Active users",
-    value: "active users",
-    content: (
-      <div className="w-full overflow-hidden relative h-full p-10 text-white bg-gradient-to-br from-neutral-800 to-neutral-950">
-        <p className="mt-8 text-4xl font-bold">Active users</p>
-        <div className="flex flex-col gap-6 mt-16">
-          <div>
-            <p>User 1</p>
-          </div>
-          <div>
-            <p>User 2</p>
-          </div>
-          <div>
-            <p>User 3</p>
-          </div>
-        </div>
-      </div>
-    ),
-  },
-];
 
 const page = () => {
-  const [isConnected, setIsConnected] = useState(false);
-
-  console.log(isConnected);
+  const [users, setUsers] = useState([]);
+  console.log(users);
 
   useEffect(() => {
-    connectSocket("g");
+    connectSocket();
+
+    socket.on("connectedUsers", (users) => {
+      console.log(users);
+      setUsers(users);
+    });
+
+    socket.on("newUserConnected", (user) => {
+      // @ts-ignore
+      setUsers((prev) => [...prev, user]);
+    })
+
+    socket.on("userDisconnected", (userId) => {
+      // @ts-ignore
+      setUsers((prev) => prev.filter(user => user._id !== userId));
+    })
+
+    return () => {
+      socket.off("connectedUsers");
+      socket.off("connect");
+      socket.off("disconnect");
+      socket.off("newUserConnected");
+      socket.off("userDisconnected")
+    }
+    
   }, []);
 
   return (
     <section className="flex h-screen">
-      <div className="w-1/4 relative">
-        <Tabs tabs={tabs} />
-      </div>
+      <Sidebar users={users} />
       <div className="w-full flex flex-col h-full p-4">
         <div className="border-b-white border-b w-full p-6">
           <h4>User 5</h4>

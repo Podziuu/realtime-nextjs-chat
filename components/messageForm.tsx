@@ -14,7 +14,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
-import socket from "@/app/socket";
+import socket, { connectSocket } from "@/app/socket";
+import { useEffect } from "react";
 // import { toast } from "@/components/ui/use-toast"
 
 const FormSchema = z.object({
