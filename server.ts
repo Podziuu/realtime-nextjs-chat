@@ -69,13 +69,11 @@ app.prepare().then(() => {
       // console.log("message: " + msg.message + " from " + socket.userId + "to " + msg.user);
       console.log(`message ${msg.message} from ${socket.userId} to ${msg.user}`);
       // emit message to the specific user
-      const receiver = await User.findOne({username: msg.user}, "_id"); // id of the receiver
-      console.log(receiver);
-      socket.to(receiver).emit("message", { message: msg.message, user: socket.userId });
+      socket.to(msg.user).emit("message", { message: msg.message, user: socket.userId });
       // add this message to database
-      const mess = await Message.create({ from: socket.userId, to: receiver._id, message: msg.message });
+      const mess = await Message.create({ from: socket.userId, to: msg.user, message: msg.message });
       await User.findByIdAndUpdate(socket.userId, { $push: { sentMessages: mess._id} });
-      await User.findByIdAndUpdate(receiver._id, { $push: { receivedMessages: mess._id} });
+      await User.findByIdAndUpdate(msg.user, { $push: { receivedMessages: mess._id} });
     });
   });
 

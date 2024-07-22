@@ -1,14 +1,11 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-const Sidebar = ({users, selectUser}: any) => {
-  const clickHandler = (e: any) => {
-    selectUser(e.target.textContent);
-  }
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import React from "react";
+
+const Sidebar = ({ users, selectUser }: any) => {
+  const clickHandler = (e: React.MouseEvent<HTMLElement>) => {
+    selectUser(e.currentTarget.id);
+  };
 
   return (
     <div className="w-1/4 relative">
@@ -61,7 +58,16 @@ const Sidebar = ({users, selectUser}: any) => {
                   <p>User 3</p>
                 </div>
               </div>
-              {users.map((user: any) => <div onClick={clickHandler} key={user._id}>{user.username}</div>)}
+              {users.map((user: any) => (
+                <div
+                  className="cursor-pointer"
+                  onClick={clickHandler}
+                  key={user._id}
+                  id={user._id}
+                >
+                  {user.username}
+                </div>
+              ))}
             </CardContent>
           </Card>
         </TabsContent>
