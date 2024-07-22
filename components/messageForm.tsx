@@ -22,14 +22,14 @@ const FormSchema = z.object({
     message: z.string().min(1)
 });
 
-export function MessageForm() {
+export function MessageForm({user}: {user: string}) {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
     console.log(data);
-    socket.emit("message", data.message);
+    socket.emit("message", {message: data.message, user});
     // toast({
     //   title: "You submitted the following values:",
     //   description: (

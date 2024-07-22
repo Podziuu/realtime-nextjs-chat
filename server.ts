@@ -7,6 +7,7 @@ import cookie from "cookie";
 import jwt from "jsonwebtoken";
 import { connectToDatabase } from "./utils/mongoose.ts";
 import User from "./database/user.model.ts";
+import Message from "./database/message.model.js";
 
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
@@ -64,8 +65,17 @@ app.prepare().then(() => {
       socket.broadcast.emit("userDisconnected", socket.userId);
     });
 
-    socket.on("message", (msg) => {
-      console.log("message: " + msg + " from " + socket.userId);
+    socket.on("message", async (msg) => {
+      // console.log("message: " + msg.message + " from " + socket.userId + "to " + msg.user);
+      console.log(`message ${msg.message} from ${socket.userId} to ${msg.user}`);
+      // emit message to the specific user
+      const receiver = await User.findOne({username: msg.user}, "_id"); // id of the receiver
+      console.log(receiver);
+      socket.to(receiver).emit("message", { message: msg.message, user: socket.userId });
+      // add this message to database
+      const mess = await Message.create({ from: socket.userId, to: receiver._id, message: msg.message });
+      await User.findByIdAndUpdate(socket.userId, { $push: { sentMessages: mess._id} });
+      await User.findByIdAndUpdate(receiver._id, { $push: { receivedMessages: mess._id} });
     });
   });
 

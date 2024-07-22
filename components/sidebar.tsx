@@ -5,7 +5,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-const Sidebar = ({users}: any) => {
+const Sidebar = ({users, selectUser}: any) => {
+  const clickHandler = (e: any) => {
+    selectUser(e.target.textContent);
+  }
+
   return (
     <div className="w-1/4 relative">
       <Tabs defaultValue="your_chats" className="w-full flex flex-col h-full">
@@ -57,7 +61,7 @@ const Sidebar = ({users}: any) => {
                   <p>User 3</p>
                 </div>
               </div>
-              {users.map((user: any) => <div key={user._id}>{user.username}</div>)}
+              {users.map((user: any) => <div onClick={clickHandler} key={user._id}>{user.username}</div>)}
             </CardContent>
           </Card>
         </TabsContent>

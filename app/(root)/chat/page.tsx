@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 
 const page = () => {
   const [users, setUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState("");
   console.log(users);
 
   useEffect(() => {
@@ -40,7 +41,7 @@ const page = () => {
 
   return (
     <section className="flex h-screen">
-      <Sidebar users={users} />
+      <Sidebar users={users} selectUser={setSelectedUser} />
       <div className="w-full flex flex-col h-full p-4">
         <div className="border-b-white border-b w-full p-6">
           <h4>User 5</h4>
@@ -62,7 +63,7 @@ const page = () => {
           </div>
         </div>
 
-        <MessageForm />
+        <MessageForm user={selectedUser} />
       </div>
     </section>
   );
