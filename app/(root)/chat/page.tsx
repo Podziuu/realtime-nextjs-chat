@@ -29,12 +29,17 @@ const page = () => {
       setUsers((prev) => prev.filter(user => user._id !== userId));
     })
 
+    socket.on("message", (msg) => {
+      console.log(msg);
+    })
+
     return () => {
       socket.off("connectedUsers");
       socket.off("connect");
       socket.off("disconnect");
       socket.off("newUserConnected");
-      socket.off("userDisconnected")
+      socket.off("userDisconnected");
+      socket.off("message");
     }
     
   }, []);
