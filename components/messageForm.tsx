@@ -17,7 +17,7 @@ import { Textarea } from "@/components/ui/textarea";
 import socket, { connectSocket } from "@/app/socket";
 import { useEffect } from "react";
 // import { toast } from "@/components/ui/use-toast"
-import { Message } from "@/types";
+import { IMessage } from "@/types";
 
 const FormSchema = z.object({
     message: z.string().min(1)
@@ -32,7 +32,7 @@ export function MessageForm({user, addMessage}: {user: string, addMessage: any})
     console.log(data);
     socket.emit("message", {message: data.message, user});
     // addMessage({message: data.message, user: "me"}); // make this our id
-    addMessage((prev: Message[]) => [...prev, {message: data.message, user: "me"}]);
+    addMessage((prev: IMessage[]) => [...prev, {message: data.message, user: "me"}]);
     // toast({
     //   title: "You submitted the following values:",
     //   description: (

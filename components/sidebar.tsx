@@ -1,11 +1,48 @@
+"use client";
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import React from "react";
+import React, {useEffect, useState} from "react";
+import socket, { connectSocket } from "@/app/socket";
+import { IUser } from "@/types";
+import { useUserStore } from "@/store/userState";
 
-const Sidebar = ({ users, selectUser }: any) => {
+const Sidebar = () => {
+  const [users, setUsers] = useState<IUser[]>([]);
+  const [selectedUser, setSelectedUser] = useState("");
+
   const clickHandler = (e: React.MouseEvent<HTMLElement>) => {
-    selectUser(e.currentTarget.id);
+    setSelectedUser(e.currentTarget.id);
+    // @ts-ignore
+    useUserStore.setState({username: e.currentTarget.textContent});
+    useUserStore.setState({selectedUser: e.currentTarget.id});
   };
+
+  useEffect(() => {
+    connectSocket();
+
+    socket.on("connectedUsers", (users) => {
+      setUsers(users);
+    });
+
+    socket.on("newUserConnected", (user) => {
+      // @ts-ignore
+      setUsers((prev) => [...prev, user]);
+    });
+
+    socket.on("userDisconnected", (userId) => {
+      // @ts-ignore
+      setUsers((prev) => prev.filter((user) => user._id !== userId));
+    });
+
+    return () => {
+      socket.off("connectedUsers");
+      socket.off("connect");
+      socket.off("disconnect");
+      socket.off("newUserConnected");
+      socket.off("userDisconnected");
+    }
+  }, [])
 
   return (
     <div className="w-1/4 relative">

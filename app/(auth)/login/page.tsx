@@ -55,6 +55,7 @@ const page = () => {
         });
         return;
       }
+      localStorage.setItem("user", data._id);
       router.push("/chat");
     } finally {
       setIsLoading(false);

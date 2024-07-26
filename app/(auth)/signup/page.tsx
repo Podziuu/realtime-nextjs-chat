@@ -65,6 +65,7 @@ const page = () => {
         });
         return;
       }
+      localStorage.setItem("user", data._id);
       // socket.connect();
       router.push("/chat");
     } finally {

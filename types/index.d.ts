@@ -1,9 +1,10 @@
-export interface User {
+export interface IUser {
     _id: string;
     username: string;
   }
   
-export interface Message {
+export interface IMessage {
     user: string;
     message: string;
+    timestamp?: Date;
   }
