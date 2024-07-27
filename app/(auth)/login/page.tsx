@@ -17,6 +17,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
 import { useState } from "react";
+import { useUserStore } from "@/store/userState";
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -55,7 +56,6 @@ const page = () => {
         });
         return;
       }
-      localStorage.setItem("user", data._id);
       router.push("/chat");
     } finally {
       setIsLoading(false);

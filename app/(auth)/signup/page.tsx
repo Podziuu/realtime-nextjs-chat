@@ -17,7 +17,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
 import { useState } from "react";
-// import { socket } from "@/app/socket";
+import { useUserStore } from "@/store/userState";
 
 const formSchema = z.object({
   username: z.string().min(2).max(50),
@@ -65,8 +65,6 @@ const page = () => {
         });
         return;
       }
-      localStorage.setItem("user", data._id);
-      // socket.connect();
       router.push("/chat");
     } finally {
       setIsLoading(false);

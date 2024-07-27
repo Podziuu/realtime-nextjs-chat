@@ -6,16 +6,24 @@ import React, {useEffect, useState} from "react";
 import socket, { connectSocket } from "@/app/socket";
 import { IUser } from "@/types";
 import { useUserStore } from "@/store/userState";
+import queryString from 'query-string';
+import { useRouter } from "next/navigation";
 
 const Sidebar = () => {
   const [users, setUsers] = useState<IUser[]>([]);
   const [selectedUser, setSelectedUser] = useState("");
+
+  const router = useRouter();
 
   const clickHandler = (e: React.MouseEvent<HTMLElement>) => {
     setSelectedUser(e.currentTarget.id);
     // @ts-ignore
     useUserStore.setState({username: e.currentTarget.textContent});
     useUserStore.setState({selectedUser: e.currentTarget.id});
+    const parsed = queryString.parse(location.search);
+    parsed.user = e.currentTarget.id;
+    const url = queryString.stringifyUrl({url: location.pathname, query: parsed});
+    router.push(url, {scroll: false});
   };
 
   useEffect(() => {
