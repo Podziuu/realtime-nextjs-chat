@@ -13,7 +13,7 @@ export const POST = async (req: Request) => {
   const user = await User.findOne({ email });
 
   if (user && (await user.comparePassword(password))) {
-    const token = generateToken(user._id);
+    const token = generateToken({ userId: user._id, username: user.username });
     cookies().set("token", token, {
         httpOnly: true,
         secure: true,

@@ -27,7 +27,7 @@ export const POST = async (req: Request) => {
   }
 
   // TODO: generate JWT token and send it back to the client
-  const token = generateToken(newUser._id);
+  const token = generateToken({ userId: newUser._id, username: newUser.username });
   cookies().set("token", token, {
     httpOnly: true,
     secure: true,

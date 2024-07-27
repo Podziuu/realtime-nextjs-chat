@@ -23,7 +23,7 @@ const FormSchema = z.object({
     message: z.string().min(1)
 });
 
-export function MessageForm({user, addMessage}: {user: string, addMessage: any}) {
+export function MessageForm({user, addMessage}: {user: string | null, addMessage: any}) {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });

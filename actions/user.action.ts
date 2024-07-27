@@ -4,44 +4,31 @@ import Message from "@/database/message.model";
 import User from "@/database/user.model";
 import { connectToDatabase } from "@/utils/mongoose";
 import { IMessage } from "@/types";
-// { from: string; to: string }
+import mongoose from "mongoose";
+
 export async function getMessages({ from, to }: any) {
   try {
     connectToDatabase();
 
-    console.log(from);
+    const fromId = new mongoose.Types.ObjectId(from);
+    const toId = new mongoose.Types.ObjectId(to);
 
-    // const user = await User.findOne({_id: from});
+    const messages = await Message.aggregate([
+      {
+        $match: {
+          $or: [
+            { from: fromId, to: toId },
+            { from: toId, to: fromId },
+          ],
+        },
+      },
+      {
+        $sort: { timestamp: 1 },
+      },
+    ]);
 
-    // console.log(user);
+    return messages;
 
-    const user = await User.findById(from)
-      .populate({
-        path: "sentMessages",
-        match: { to },
-        select: "message timestamp",
-      })
-      .populate({
-        path: "receivedMessages",
-        match: { from: to },
-        select: "message timestamp",
-      });
-
-    if (!user) {
-      throw new Error("User not found");
-    }
-
-    const sentMessages = user.sentMessages as IMessage[];
-    const receivedMessages = user.receivedMessages as IMessage[];
-
-    // Combine the results
-    const allMessages = [...sentMessages, ...receivedMessages];
-
-    // Optionally, sort by timestamp if needed
-    // @ts-ignore
-    // allMessages.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
-
-    return allMessages;
   } catch (error) {
     console.log(error);
     throw error;
