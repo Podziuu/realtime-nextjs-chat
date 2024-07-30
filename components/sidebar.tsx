@@ -8,7 +8,7 @@ import { IUser } from "@/types";
 import queryString from 'query-string';
 import { useRouter } from "next/navigation";
 
-const Sidebar = () => {
+const Sidebar = ({chats, currentUser}: any) => {
   const [users, setUsers] = useState<IUser[]>([]);
   const [selectedUser, setSelectedUser] = useState("");
 
@@ -63,20 +63,12 @@ const Sidebar = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex flex-col gap-6 mt-16">
+              {chats && JSON.parse(chats).map((chat) => (
                 <div>
-                  <p>User 1</p>
-                  <p>You: Hello</p>
+                  <p>{chat.chatUser.username}</p>
+                  <p>{currentUser === chat.recentMessage.from ? "You: " : `${chat.chatUser.username}: ` }{chat.recentMessage.message}</p>
                 </div>
-                <div>
-                  <p>User 2</p>
-                  <p>You: Hello</p>
-                </div>
-                <div>
-                  <p>User 3</p>
-                  <p>You: Hello</p>
-                </div>
-              </div>
+              ))}
             </CardContent>
           </Card>
         </TabsContent>
@@ -88,17 +80,6 @@ const Sidebar = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex flex-col gap-6 mt-16">
-                <div>
-                  <p>User 1</p>
-                </div>
-                <div>
-                  <p>User 2</p>
-                </div>
-                <div>
-                  <p>User 3</p>
-                </div>
-              </div>
               {users.map((user: any) => (
                 <div
                   className="cursor-pointer"

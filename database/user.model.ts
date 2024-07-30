@@ -10,6 +10,7 @@ export interface IUser extends Document {
   password: string;
   sentMessages: Schema.Types.ObjectId[];
   receivedMessages: Schema.Types.ObjectId[];
+  chats: Schema.Types.ObjectId[];
 }
 
 const UserSchema = new Schema<IUser>({
@@ -17,7 +18,8 @@ const UserSchema = new Schema<IUser>({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   sentMessages: [{ type: Schema.Types.ObjectId, ref: "Message" }],
-  receivedMessages: [{ type: Schema.Types.ObjectId, ref: "Message" }]
+  receivedMessages: [{ type: Schema.Types.ObjectId, ref: "Message" }],
+  chats: [{ type: Schema.Types.ObjectId, ref: "User" }]
 });
 
 UserSchema.pre("save", async function(next) {

@@ -87,8 +87,8 @@ app.prepare().then(() => {
       socket.to(userSocketId).emit("message", { message: msg.message, user: socket.userId });
       // add this message to database
       const mess = await Message.create({ from: socket.userId, to: msg.user, message: msg.message });
-      await User.findByIdAndUpdate(socket.userId, { $push: { sentMessages: mess._id} });
-      await User.findByIdAndUpdate(msg.user, { $push: { receivedMessages: mess._id} });
+      await User.findByIdAndUpdate(socket.userId, { $push: { sentMessages: mess._id}, $addToSet: { chats: msg.user } });
+      await User.findByIdAndUpdate(msg.user, { $push: { receivedMessages: mess._id}, $addToSet: { chats: socket.userId } });
     });
   });
 
