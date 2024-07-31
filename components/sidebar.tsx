@@ -4,12 +4,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import React, { useEffect, useState } from "react";
 import socket, { connectSocket } from "@/app/socket";
-import { IUser } from "@/types";
+import { ChatWithRecentMessage, IUser, SidebarProps, ConnectedUser } from "@/types";
 import queryString from "query-string";
 import { useRouter } from "next/navigation";
 import NewChat from "./newChat";
 
-const Sidebar = ({ chats, currentUser }: any) => {
+const Sidebar = ({ chats, currentUser }: SidebarProps) => {
   const [users, setUsers] = useState<IUser[]>([]);
   const [selectedUser, setSelectedUser] = useState("");
 
@@ -69,11 +69,11 @@ const Sidebar = ({ chats, currentUser }: any) => {
             <CardContent className="flex justify-between flex-col flex-1">
               <div>
                 {chats &&
-                  JSON.parse(chats).map((chat: any) => (
+                  JSON.parse(chats).map((chat: ChatWithRecentMessage) => (
                     <div key={chat.chatUser._id}>
                       <p>{chat.chatUser.username}</p>
                       <p>
-                        {chat.recentMessage && (currentUser === chat.recentMessage.from
+                        {chat.recentMessage && (currentUser === chat.recentMessage.from.toString()
                           ? "You: "
                           : `${chat.chatUser.username}: `)}
                         {chat.recentMessage && chat.recentMessage.message}
@@ -93,7 +93,7 @@ const Sidebar = ({ chats, currentUser }: any) => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {users.map((user: any) => (
+              {users.map((user: ConnectedUser) => (
                 <div
                   className="cursor-pointer"
                   onClick={clickHandler}

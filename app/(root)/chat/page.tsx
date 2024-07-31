@@ -1,5 +1,5 @@
 import Sidebar from "@/components/sidebar";
-import { IUser, IMessage, IToken, SearchParamsProps } from "@/types";
+import { IToken, SearchParamsProps } from "@/types";
 import { getMessages, getChatUsers } from "@/actions/user.action";
 import MessagePanel from "@/components/messagePanel";
 import { jwtDecode } from "jwt-decode";

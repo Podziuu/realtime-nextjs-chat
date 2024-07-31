@@ -1,14 +1,14 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-
 import { MessageForm } from "./messageForm";
-import { IMessage } from "@/types";
+import { SocketMessage, MessagePanelProps } from "@/types";
 import socket, { connectSocket } from "@/app/socket";
 import { useSearchParams } from 'next/navigation'
+import {IMessage} from "../database/message.model";
 
-const MessagePanel = ({messageArray, username}: any) => {
-  const [messages, setMessages] = useState<IMessage[]>([]);
+const MessagePanel = ({messageArray, username}: MessagePanelProps) => {
+  const [messages, setMessages] = useState<SocketMessage[]>([]);
 
   const searchParams = useSearchParams();
 
@@ -38,8 +38,8 @@ const MessagePanel = ({messageArray, username}: any) => {
       </div>
       <div className="p-4 space-y-8 flex flex-col w-full overflow-auto no-scrollbar" >
         {/* Messages from database */}
-        {messageArray && JSON.parse(messageArray).map((msg: any) => {
-          let position = msg.from === selectedUser ? "self-start" : "self-end";
+        {messageArray && JSON.parse(messageArray).map((msg: IMessage) => {
+          let position = msg.from.toString() === selectedUser ? "self-start" : "self-end";
           return (
             <div
               className={`${position} bg-blue-600 w-fit max-w-80 p-1 rounded-lg`}
@@ -50,12 +50,12 @@ const MessagePanel = ({messageArray, username}: any) => {
           );
         })}
         {/* Messages from socket server */}
-        {messages.map((msg) => {
+        {messages.map((msg, index) => {
           let position = msg.user === selectedUser ? "self-start" : "self-end";
           return (
             <div
               className={`${position} bg-blue-600 w-fit max-w-80 p-1 rounded-lg`}
-              // key={msg.}
+              key={index}
             >
               {msg.message}
             </div>

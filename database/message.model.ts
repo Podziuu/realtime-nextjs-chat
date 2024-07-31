@@ -4,6 +4,7 @@ const { models} = pkg;
 // Compilator want to import models this way not with simple import
 
 export interface IMessage extends Document {
+  _id: string;
   from: Schema.Types.ObjectId;
   to: Schema.Types.ObjectId;
   message: string;

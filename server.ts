@@ -20,9 +20,7 @@ const connectedUsers = new Set();
 
 const getConnectedUsers = async () => {
   const usersArr = Array.from(connectedUsers);
-  console.log(usersArr);
   const usersIds = usersArr.map((user) => user.userId);
-  console.log(usersIds);
   const users = await User.find({ _id: { $in: usersIds } }).select(
     "_id username"
   );
@@ -56,7 +54,6 @@ app.prepare().then(() => {
 
   io.on("connection", async (socket) => {
     console.log("New client connected", socket.userId);
-    // connectedUsers.add(socket.userId);
     connectedUsers.add({ userId: socket.userId, socketId: socket.id});
 
     const allUsers = await getConnectedUsers();
@@ -80,8 +77,6 @@ app.prepare().then(() => {
     });
 
     socket.on("message", async (msg) => {
-      // console.log("message: " + msg.message + " from " + socket.userId + "to " + msg.user);
-      console.log(`message ${msg.message} from ${socket.userId} to ${msg.user}`);
       // emit message to the specific user
       const userSocketId = getUserSocketId(msg.user);
       socket.to(userSocketId).emit("message", { message: msg.message, user: socket.userId });

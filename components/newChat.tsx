@@ -5,14 +5,11 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { IconPlus } from "@tabler/icons-react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,7 +17,6 @@ import { useForm } from "react-hook-form";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -30,12 +26,13 @@ import { createChat } from "@/actions/user.action";
 import { useToast } from "@/components/ui/use-toast";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { NewChatProps } from "@/types";
 
 const formSchema = z.object({
   username: z.string().min(2).max(20),
 });
 
-const NewChat = ({ currentUser }: any) => {
+const NewChat = ({ currentUser }: NewChatProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -46,33 +43,28 @@ const NewChat = ({ currentUser }: any) => {
 
   const { toast } = useToast();
   const path = usePathname();
-  console.log(path);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log(values);
-
     try {
       setIsLoading(true);
-      const res = await createChat({
+      await createChat({
         username: values.username,
         userId: currentUser,
         path,
       });
-
-      console.log(res);
     } catch (error) {
-      // @ts-ignore
-      console.log(error.message, "WIADOMOSC BLEDU");
+      // this approach fix issues with type of error
+      let errorMessage = "Failed to do something exceptional";
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
       toast({
-        // @ts-ignore
-        title: error.message,
+        title: errorMessage,
         variant: "destructive",
       });
     } finally {
       setIsLoading(false);
     }
-
-    // console.log(res);
   };
 
   return (

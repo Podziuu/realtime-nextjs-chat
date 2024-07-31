@@ -5,8 +5,9 @@ import User from "@/database/user.model";
 import { connectToDatabase } from "@/utils/mongoose";
 import mongoose from "mongoose";
 import { revalidatePath } from "next/cache";
+import { getMessagesProps, getChatUsersProps, createChatProps, Chat } from "@/types";
 
-export async function getMessages({ from, to }: any) {
+export async function getMessages({ from, to }: getMessagesProps) {
   try {
     connectToDatabase();
 
@@ -34,7 +35,7 @@ export async function getMessages({ from, to }: any) {
   }
 }
 
-export async function getChatUsers({ userId }: any) {
+export async function getChatUsers({ userId }: getChatUsersProps) {
   try {
     connectToDatabase();
 
@@ -48,7 +49,7 @@ export async function getChatUsers({ userId }: any) {
       .select("chats")
       .exec();
 
-    const chatUserIds = chats.chats.map((chat: any) => chat._id);
+    const chatUserIds = chats.chats.map((chat: Chat) => chat._id);
 
     const recentMessages = await Message.aggregate([
       {
@@ -72,7 +73,7 @@ export async function getChatUsers({ userId }: any) {
       },
     ]);
 
-    const chatsWithRecentMessages = chats.chats.map((chat: any) => {
+    const chatsWithRecentMessages = chats.chats.map((chat: Chat) => {
       const recentMessage = recentMessages.find(
         (msg) => msg._id.toString() === chat._id.toString()
       );
@@ -89,13 +90,11 @@ export async function getChatUsers({ userId }: any) {
   }
 }
 
-export async function createChat({ username, userId, path }: any) {
+export async function createChat({ username, userId, path }: createChatProps) {
   try {
     connectToDatabase();
 
     const user = await User.findOne({ username });
-
-    console.log(user);
 
     if(!user) {
       throw new Error("User not found");
@@ -118,7 +117,6 @@ export async function createChat({ username, userId, path }: any) {
     });
 
     revalidatePath(path);
-    // return user;
   } catch (error) {
     console.log(error);
     throw error;
