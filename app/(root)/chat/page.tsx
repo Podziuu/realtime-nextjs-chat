@@ -15,9 +15,6 @@ const page = async ({ searchParams }: SearchParamsProps) => {
 
   const chats = await getChatUsers({ userId: currentUserId });
 
-  console.log(chats, "CHATS");
-
-    console.log(selectedUser);
   if (selectedUser && currentUserId) {
     messages = await getMessages({ from: currentUserId, to: selectedUser });
   }

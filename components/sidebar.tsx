@@ -2,13 +2,14 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import socket, { connectSocket } from "@/app/socket";
 import { IUser } from "@/types";
-import queryString from 'query-string';
+import queryString from "query-string";
 import { useRouter } from "next/navigation";
+import NewChat from "./newChat";
 
-const Sidebar = ({chats, currentUser}: any) => {
+const Sidebar = ({ chats, currentUser }: any) => {
   const [users, setUsers] = useState<IUser[]>([]);
   const [selectedUser, setSelectedUser] = useState("");
 
@@ -18,8 +19,11 @@ const Sidebar = ({chats, currentUser}: any) => {
     setSelectedUser(e.currentTarget.id);
     const parsed = queryString.parse(location.search);
     parsed.user = e.currentTarget.id;
-    const url = queryString.stringifyUrl({url: location.pathname, query: parsed});
-    router.push(url, {scroll: false});
+    const url = queryString.stringifyUrl({
+      url: location.pathname,
+      query: parsed,
+    });
+    router.push(url, { scroll: false });
   };
 
   useEffect(() => {
@@ -45,8 +49,8 @@ const Sidebar = ({chats, currentUser}: any) => {
       socket.off("disconnect");
       socket.off("newUserConnected");
       socket.off("userDisconnected");
-    }
-  }, [])
+    };
+  }, []);
 
   return (
     <div className="w-1/4 relative">
@@ -56,19 +60,28 @@ const Sidebar = ({chats, currentUser}: any) => {
           <TabsTrigger value="active_users">Active users</TabsTrigger>
         </TabsList>
         <TabsContent value="your_chats" className="flex-1 overflow-auto">
-          <Card className="h-full">
+          <Card className="h-full flex flex-col">
             <CardHeader>
               <CardTitle className="mt-8 text-4xl font-bold">
                 Your chats
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              {chats && JSON.parse(chats).map((chat) => (
-                <div>
-                  <p>{chat.chatUser.username}</p>
-                  <p>{currentUser === chat.recentMessage.from ? "You: " : `${chat.chatUser.username}: ` }{chat.recentMessage.message}</p>
-                </div>
-              ))}
+            <CardContent className="flex justify-between flex-col flex-1">
+              <div>
+                {chats &&
+                  JSON.parse(chats).map((chat: any) => (
+                    <div key={chat.chatUser._id}>
+                      <p>{chat.chatUser.username}</p>
+                      <p>
+                        {chat.recentMessage && (currentUser === chat.recentMessage.from
+                          ? "You: "
+                          : `${chat.chatUser.username}: `)}
+                        {chat.recentMessage && chat.recentMessage.message}
+                      </p>
+                    </div>
+                  ))}
+              </div>
+              <NewChat currentUser={currentUser} />
             </CardContent>
           </Card>
         </TabsContent>

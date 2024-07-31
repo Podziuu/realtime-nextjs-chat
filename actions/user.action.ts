@@ -3,8 +3,8 @@
 import Message from "@/database/message.model";
 import User from "@/database/user.model";
 import { connectToDatabase } from "@/utils/mongoose";
-import { IMessage } from "@/types";
 import mongoose from "mongoose";
+import { revalidatePath } from "next/cache";
 
 export async function getMessages({ from, to }: any) {
   try {
@@ -40,51 +40,85 @@ export async function getChatUsers({ userId }: any) {
 
     const userObjetId = new mongoose.Types.ObjectId(userId);
 
-    const chats = await User.findById({ _id: userId }).populate({
-      path: "chats",
-      select: "username",
-    }).select("chats").exec();
+    const chats = await User.findById({ _id: userId })
+      .populate({
+        path: "chats",
+        select: "username",
+      })
+      .select("chats")
+      .exec();
 
-    const chatUserIds = chats.chats.map((chat => chat._id));
+    const chatUserIds = chats.chats.map((chat: any) => chat._id);
 
     const recentMessages = await Message.aggregate([
       {
         $match: {
           $or: [
             { from: userObjetId, to: { $in: chatUserIds } },
-            { from: { $in: chatUserIds }, to: userObjetId }
-          ]
-        }
+            { from: { $in: chatUserIds }, to: userObjetId },
+          ],
+        },
       },
       {
-        $sort: { timestamp: -1 }
+        $sort: { timestamp: -1 },
       },
       {
         $group: {
           _id: {
-            $cond: [
-              { $eq: ["$from", userObjetId] },
-              "$to",
-              "$from"
-            ]
+            $cond: [{ $eq: ["$from", userObjetId] }, "$to", "$from"],
           },
-          recentMessage: {$first: "$$ROOT"}
-        }
-      }
-    ])
+          recentMessage: { $first: "$$ROOT" },
+        },
+      },
+    ]);
 
-    const chatsWithRecentMessages = chats.chats.map((chat) => {
-      console.log(chat, "CHAAAAATERTS");
-      console.log(recentMessages, "RECENT MESSAGESSS")
-      const recentMessage = recentMessages.find((msg) => msg._id.toString() === chat._id.toString())
-      console.log(recentMessage, "OSTATNIA WEIADOMOSC")
+    const chatsWithRecentMessages = chats.chats.map((chat: any) => {
+      const recentMessage = recentMessages.find(
+        (msg) => msg._id.toString() === chat._id.toString()
+      );
       return {
         chatUser: chat,
-        recentMessage: recentMessage ? recentMessage.recentMessage : null
-      }
-    })
+        recentMessage: recentMessage ? recentMessage.recentMessage : null,
+      };
+    });
 
     return chatsWithRecentMessages;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+export async function createChat({ username, userId, path }: any) {
+  try {
+    connectToDatabase();
+
+    const user = await User.findOne({ username });
+
+    console.log(user);
+
+    if(!user) {
+      throw new Error("User not found");
+    }
+
+    if(userId === user._id.toString()) {
+      throw new Error("You can't chat with yourself");
+    }
+
+    if (user.chats.includes(userId)) {
+      throw new Error("Chat already exists");
+    }
+
+    user.chats.push(userId);
+
+    await user.save();
+
+    await User.findByIdAndUpdate(userId, {
+      $push: { chats: user._id },
+    });
+
+    revalidatePath(path);
+    // return user;
   } catch (error) {
     console.log(error);
     throw error;
