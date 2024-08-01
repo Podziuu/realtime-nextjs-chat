@@ -122,3 +122,16 @@ export async function createChat({ username, userId, path }: createChatProps) {
     throw error;
   }
 }
+
+export async function getUsernameById(userId: string) {
+  try {
+    connectToDatabase();
+
+    const user = await User.findById(userId).select("username");
+
+    return user.username;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}

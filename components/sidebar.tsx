@@ -53,30 +53,30 @@ const Sidebar = ({ chats, currentUser }: SidebarProps) => {
   }, []);
 
   return (
-    <div className="w-1/4 relative">
+    <div className="w-1/3 md:w-1/4 relative">
       <Tabs defaultValue="your_chats" className="w-full flex flex-col h-full">
-        <TabsList className="w-full flex-none space-x-16">
-          <TabsTrigger value="your_chats">Your chats</TabsTrigger>
-          <TabsTrigger value="active_users">Active users</TabsTrigger>
+        <TabsList className="w-full flex-none spaxe-x-2 lg:space-x-16">
+          <TabsTrigger className="max-md:text-xs"  value="your_chats">Your chats</TabsTrigger>
+          <TabsTrigger className="max-md:text-xs" value="active_users">Active users</TabsTrigger>
         </TabsList>
         <TabsContent value="your_chats" className="flex-1 overflow-auto">
           <Card className="h-full flex flex-col">
             <CardHeader>
-              <CardTitle className="mt-8 text-4xl font-bold">
+              <CardTitle className="mt-8 max-md:text-xl text-4xl font-bold">
                 Your chats
               </CardTitle>
             </CardHeader>
             <CardContent className="flex justify-between flex-col flex-1">
-              <div>
+              <div className="space-y-6">
                 {chats &&
                   JSON.parse(chats).map((chat: ChatWithRecentMessage) => (
-                    <div key={chat.chatUser._id}>
-                      <p>{chat.chatUser.username}</p>
-                      <p>
+                    <div key={chat.chatUser._id} id={chat.chatUser._id} onClick={clickHandler} className="cursor-pointer">
+                      <p className="font-bold text-lg">{chat.chatUser.username}</p>
+                      <p className="text-md text-white">
                         {chat.recentMessage && (currentUser === chat.recentMessage.from.toString()
                           ? "You: "
                           : `${chat.chatUser.username}: `)}
-                        {chat.recentMessage && chat.recentMessage.message}
+                        <span className="text-slate-600 font-normal">{chat.recentMessage && chat.recentMessage.message}</span>
                       </p>
                     </div>
                   ))}
@@ -88,7 +88,7 @@ const Sidebar = ({ chats, currentUser }: SidebarProps) => {
         <TabsContent value="active_users" className="flex-1 overflow-auto">
           <Card className="h-full">
             <CardHeader>
-              <CardTitle className="mt-8 text-4xl font-bold">
+              <CardTitle className="mt-8 max-md:text-xl text-4xl font-bold">
                 Active users
               </CardTitle>
             </CardHeader>

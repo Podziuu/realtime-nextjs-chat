@@ -12,10 +12,10 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
 import socket from "@/app/socket";
 import React from "react";
 import { SocketMessage, MessageFormProps } from "@/types";
+import { Input } from "./ui/input";
 
 const FormSchema = z.object({
     message: z.string().min(1)
@@ -29,6 +29,7 @@ export function MessageForm({user, addMessage}: MessageFormProps) {
   function onSubmit(data: z.infer<typeof FormSchema>) {
     socket.emit("message", {message: data.message, user});
     addMessage((prev: SocketMessage[]) => [...prev, {message: data.message, user: "me"}]);
+    form.reset({message: ""});
   }
 
   return (
@@ -41,7 +42,7 @@ export function MessageForm({user, addMessage}: MessageFormProps) {
             <FormItem>
               <FormLabel>Send message</FormLabel>
               <FormControl>
-                <Textarea
+                <Input
                   placeholder="Enter your text here..."
                   className="resize-none"
                   {...field}
